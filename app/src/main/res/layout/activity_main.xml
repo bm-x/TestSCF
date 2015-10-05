@@ -10,11 +10,77 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
+        <!--<android.support.v4.view.ViewPager-->
+        <!--android:id="@+id/pager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:background="#fff47d"-->
+        <!--android:layout_height="match_parent" />-->
+        <HorizontalScrollView
             android:layout_width="match_parent"
-            android:background="#fff47d"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="#ffdb71"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Botton" />
+            </LinearLayout>
+        </HorizontalScrollView>
 
     </com.bm.library.SwipeCloseLayout>
 
