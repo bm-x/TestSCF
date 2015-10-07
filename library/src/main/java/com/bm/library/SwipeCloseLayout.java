@@ -110,16 +110,14 @@ public class SwipeCloseLayout extends FrameLayout {
 
         switch (Action) {
             case MotionEvent.ACTION_DOWN:
+
                 mAlwaysInTapRegion = true;
                 mDownX = mLastX = x;
                 mDownY = mLastY = y;
                 break;
             case MotionEvent.ACTION_MOVE:
 
-                Log.e("bm", "onInterceptTouchEvent: " + mAlwaysInTapRegion);
-
                 if (mAlwaysInTapRegion) {
-
 
                     final int moveX = (int) (x - mDownX);
                     final int moveY = (int) (y - mDownY);
@@ -153,6 +151,25 @@ public class SwipeCloseLayout extends FrameLayout {
 //        super.requestDisallowInterceptTouchEvent(disallowIntercept);
     }
 
+    private void onFling(float velocityX) {
+        if (velocityX > 0) {
+            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
+        } else {
+            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
+        }
+        invalidate();
+    }
+
+    private void onUp(MotionEvent ev) {
+        if (mScrollX > -mHalfWidth) {
+            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
+        } else {
+            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
+        }
+
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         addVelocityTrackerEvent(event);
@@ -179,13 +196,17 @@ public class SwipeCloseLayout extends FrameLayout {
                 final VelocityTracker velocityTracker = mVelocityTracker;
                 velocityTracker.computeCurrentVelocity(1000, mMaximumFlingVelocity);
                 final float velocityX = velocityTracker.getXVelocity();
+                final float velocityY = velocityTracker.getYVelocity();
 
-                Log.i("bm", "Up: velocityX " + velocityX);
+                if (Math.abs(velocityX) > Math.abs(velocityY) && Math.abs(velocityX) > 450) {
+                    onFling(velocityX);
+                } else {
+                    onUp(event);
+                }
 
                 recycleVelocityTracker();
                 break;
         }
-
 
         return true;
     }
