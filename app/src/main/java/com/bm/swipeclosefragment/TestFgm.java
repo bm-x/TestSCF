@@ -19,7 +19,6 @@ public class TestFgm extends SwipeCloseFragment {
 
     private ViewPager mViewPager;
 
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
