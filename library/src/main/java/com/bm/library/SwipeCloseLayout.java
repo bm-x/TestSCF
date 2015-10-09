@@ -10,6 +10,8 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.FrameLayout;
 import android.widget.Scroller;
 
@@ -25,6 +27,10 @@ public class SwipeCloseLayout extends FrameLayout {
     private Scroller mScroller;
     private OnCloseListener mCloseListener;
     private VelocityTracker mVelocityTracker;
+    private DecorLayout mDecorLayout;
+    private SwipeCloseFragment mFragment;
+    private View mPreviousView;
+    private Interpolator mInterpolator = new DecelerateInterpolator(0.7f);
 
     private boolean callBackFlag;
     private boolean handleFling;
@@ -60,7 +66,7 @@ public class SwipeCloseLayout extends FrameLayout {
     }
 
     private void init(Context ctx) {
-        mScroller = new Scroller(ctx);
+        mScroller = new Scroller(ctx, mInterpolator);
 
         final ViewConfiguration configuration = ViewConfiguration.get(ctx);
         mMaximumFlingVelocity = configuration.getScaledMaximumFlingVelocity();
@@ -73,17 +79,27 @@ public class SwipeCloseLayout extends FrameLayout {
         mCloseListener = l;
     }
 
+    public void setDecorLayout(DecorLayout decorLayout) {
+        mDecorLayout = decorLayout;
+    }
+
+    public void setFragment(SwipeCloseFragment fgm) {
+        mFragment = fgm;
+    }
+
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
             int x = mScroller.getCurrX();
             scrollTo(x, 0);
+            scrollPreviousView();
             invalidate();
         } else {
             if (mCloseListener != null && -mScrollX == mWidth && !callBackFlag) {
                 mCloseListener.onClose();
                 callBackFlag = true;
             }
+            if (mScrollX == 0 && mPreviousView != null) mPreviousView.scrollTo(0, 0);
         }
     }
 
@@ -99,6 +115,7 @@ public class SwipeCloseLayout extends FrameLayout {
         super.onSizeChanged(w, h, oldw, oldh);
         mHalfWidth = w / 2;
         mWidth = w;
+        mPreviousView = mDecorLayout.getPreviousView();
     }
 
     @Override
@@ -111,7 +128,6 @@ public class SwipeCloseLayout extends FrameLayout {
 
         switch (Action) {
             case MotionEvent.ACTION_DOWN:
-
                 mAlwaysInTapRegion = true;
                 mDownX = mLastX = x;
                 mDownY = mLastY = y;
@@ -148,30 +164,6 @@ public class SwipeCloseLayout extends FrameLayout {
     }
 
     @Override
-    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-//        super.requestDisallowInterceptTouchEvent(disallowIntercept);
-    }
-
-    private void onFling(float velocityX) {
-        if (velocityX > 0) {
-            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
-        } else {
-            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
-        }
-        invalidate();
-    }
-
-    private void onUp(MotionEvent ev) {
-        if (mScrollX > -mHalfWidth) {
-            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
-        } else {
-            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
-        }
-
-        invalidate();
-    }
-
-    @Override
     public boolean onTouchEvent(MotionEvent event) {
         addVelocityTrackerEvent(event);
 
@@ -185,7 +177,7 @@ public class SwipeCloseLayout extends FrameLayout {
                 final float deltaX = x - mLastX;
 
                 if (!canScroll(this, false, deltaX, (int) x, (int) y) || mScrollX != 0) {
-                    scrollBy((int) -deltaX, 0);
+                    doScrollBy(-deltaX);
                 }
 
                 mLastX = x;
@@ -210,6 +202,40 @@ public class SwipeCloseLayout extends FrameLayout {
         }
 
         return true;
+    }
+
+    @Override
+    public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+    }
+
+    private void onFling(float velocityX) {
+        if (velocityX > 0) {
+            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
+        } else {
+            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
+        }
+        invalidate();
+    }
+
+    private void onUp(MotionEvent ev) {
+        if (mScrollX > -mHalfWidth) {
+            mScroller.startScroll(mScrollX, 0, -mScrollX, 0);
+        } else {
+            mScroller.startScroll(mScrollX, 0, -mWidth - mScrollX, 0);
+        }
+
+        invalidate();
+    }
+
+    private void doScrollBy(float x) {
+        scrollBy((int) x, 0);
+        scrollPreviousView();
+    }
+
+    private void scrollPreviousView() {
+        float scrollPercent = (float) mScrollX / mWidth;
+        int pScroll = (int) (mHalfWidth + mHalfWidth * scrollPercent);
+        mPreviousView.scrollTo(pScroll, 0);
     }
 
     @Override
@@ -252,4 +278,4 @@ public class SwipeCloseLayout extends FrameLayout {
 
         return checkV && ViewCompat.canScrollHorizontally(v, (int) -dx);
     }
-  }
+}

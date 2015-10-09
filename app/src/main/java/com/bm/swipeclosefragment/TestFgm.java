@@ -57,6 +57,18 @@ public class TestFgm extends SwipeCloseFragment {
     public View onCreateView(LayoutInflater inflater, SwipeCloseLayout container, Bundle saveInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, null);
         mViewPager = (ViewPager) view.findViewById(R.id.pager);
+        view.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        view.findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startFragment(new TwoFragment());
+            }
+        });
         return view;
     }
 }
